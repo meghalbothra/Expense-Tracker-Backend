@@ -72,8 +72,9 @@ async function createTables() {
             id INT AUTO_INCREMENT PRIMARY KEY,
             userId INT,
             title VARCHAR(255) NOT NULL,
-            date DATE NOT NULL,
+            date DATETIME NOT NULL,
             completed BOOLEAN DEFAULT FALSE,
+            notified BOOLEAN DEFAULT FALSE,
             FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
         );`
     ];

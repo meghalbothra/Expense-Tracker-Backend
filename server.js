@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
 
-app.use("/api/v1",require('./routes/authRoutes'))
+app.use("/api/v1/auth",require('./routes/authRoutes'))
 
 
 app.use((err, req, res, next) => {

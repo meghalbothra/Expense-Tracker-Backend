@@ -6,9 +6,9 @@ const sendNotificationToFCM = async (fcmToken, mssg) => {
   const fcmURL = `https://fcm.googleapis.com/fcm/send`;
 
   const payload = {
-    to: 'fvX102prafk0jxQQiyVOF6:APA91bF2JNFDni_N8ADQZyBWpZzUhuPld-tmLuTNRNpbKpqmTOwVfsq8yL1gqYwy6DQ88FnOwD_5DHOHWbOp4l7zTkb7e00vbBHkxvNFZ5mrqdgRPFnfYhqaRoq1zHXoMRt8UTjhhaMc',
+    to: fcmToken,
     notification: {
-      title: "Budget Buddu",
+      title: "Budget - Buddy",
       body: mssg,
     },
   };

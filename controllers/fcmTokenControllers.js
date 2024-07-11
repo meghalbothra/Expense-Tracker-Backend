@@ -1,58 +1,51 @@
 const connectDB = require("../config/db");
 
-
 const fcmTokenController = async (req, res) => {
     try {
-        const { role, userId, registrationId, newFcmToken } = req.body;
+        const { userId, newFcmToken } = req.body;
 
-        let table, idColumn;
-        switch (role.toLowerCase()) {
-            case "user":
-                table = "user";
-                idColumn = "userId";
-                break;
-            case "hospital":
-                table = "hospital";
-                idColumn = "registrationId";
-                break;
-            case "organisation":
-                table = "organisation";
-                idColumn = "registrationId";
-                break;
-            default:
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid role specified",
-                });
+        // Validate input fields
+        if (!userId || !newFcmToken) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields",
+            });
         }
 
-        // Update FCM token in the corresponding table
-        const query = `UPDATE ${table} SET fcmToken = ? WHERE ${idColumn} = ?`;
-        connectDB.query(query, [newFcmToken, userId || registrationId], (err, result) => {
+        // Query to update FCM token in the users table
+        const query = 'UPDATE users SET fcmToken = ? WHERE userId = ?';
+        connectDB.query(query, [newFcmToken, userId], (err, result) => {
             if (err) {
                 console.error("Error updating FCM token:", err);
                 return res.status(500).json({
                     success: false,
-                    message: "Error updating FCM token in server",
+                    message: "Error updating FCM token on the server",
                     error: err,
                 });
             }
-            console.log(`FCM token updated for ${role}`);
+
+            if (result.affectedRows === 0) {
+                // No rows affected means userId was not found
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+
+            console.log('FCM token updated for user:', userId);
             return res.status(200).json({
                 success: true,
-                message: `FCM token updated for ${role}`,
+                message: 'FCM token updated successfully',
             });
         });
     } catch (error) {
-        console.error("Error in Update FCM Controller:", error);
+        console.error("Error in FCM Token Controller:", error);
         res.status(500).json({
             success: false,
-            message: "Error in Update FCM Controller API",
+            message: "Internal Server Error",
             error: error,
         });
     }
 };
 
-module.exports =  fcmTokenController ;
-
-
+module.exports = fcmTokenController;

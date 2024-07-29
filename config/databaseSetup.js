@@ -10,20 +10,20 @@ function setupDatabase() {
         console.log('Connected to MySQL successfully...');
         
         // Checks if the database exists, if not, create it
-        connectDB.query("CREATE DATABASE IF NOT EXISTS expense_tracker", (err) => {
+        connectDB.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE}`, (err) => {
             if (err) {
                 console.error("Error creating database: ", err);
                 return;
             }
-            console.log("Database 'expense_tracker' created successfully");
+            console.log(`Database ${process.env.MYSQL_DATABASE} created successfully`);
             
             // Connect to the 'expense_tracker' database
-            connectDB.query("USE expense_tracker", (err) => {
+            connectDB.query(`USE ${process.env.MYSQL_DATABASE}`, (err) => {
                 if (err) {
                     console.error("Error selecting database: ", err);
                     return;
                 }
-                console.log("Connected to database 'expense_tracker'");
+                console.log(`Connected to database ${process.env.MYSQL_DATABASE}`);
                 
                 // Create tables
                 createTables();

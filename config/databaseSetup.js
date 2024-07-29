@@ -1,36 +1,27 @@
-const connectDB = require('./db');
+const connectDB = require('./db'); // Ensure you have correct database configuration in './db'
 
-function setupDatabase() {
-    // Database connection
-    connectDB.query('SELECT 1', (err, results) => {
-        if (err) {
-            console.error('Error connecting to MySQL:', err);
-            return;
-        }
+async function setupDatabase() {
+    try {
+        // Check MySQL connection
+        await executeQuery('SELECT 1');
         console.log('Connected to MySQL successfully...');
-        
-        // Checks if the database exists, if not, create it
-        connectDB.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE}`, (err) => {
-            if (err) {
-                console.error("Error creating database: ", err);
-                return;
-            }
-            console.log(`Database ${process.env.MYSQL_DATABASE} created successfully`);
-            
-            // Connect to the 'expense_tracker' database
-            connectDB.query(`USE ${process.env.MYSQL_DATABASE}`, (err) => {
-                if (err) {
-                    console.error("Error selecting database: ", err);
-                    return;
-                }
-                console.log(`Connected to database ${process.env.MYSQL_DATABASE}`);
-                
-                // Create tables
-                createTables();
-            });
-        });
-    });
+
+        // Create database if it doesn't exist
+        await executeQuery(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE}`);
+        console.log(`Database ${process.env.MYSQL_DATABASE} created successfully`);
+
+        // Use the created database
+        await executeQuery(`USE ${process.env.MYSQL_DATABASE}`);
+        console.log(`Connected to database ${process.env.MYSQL_DATABASE}`);
+
+        // Create tables
+        await createTables();
+        console.log('All tables created successfully');
+    } catch (err) {
+        console.error('Error in setupDatabase:', err);
+    }
 }
+
 async function createTables() {
     const createTableQueries = [
         `CREATE TABLE IF NOT EXISTS users (
@@ -85,7 +76,7 @@ async function createTables() {
             console.log('Table created successfully');
         }
     } catch (err) {
-        console.error('Error in setupDatabase:', err);
+        console.error('Error creating tables:', err);
     }
 }
 
@@ -93,7 +84,7 @@ function executeQuery(query) {
     return new Promise((resolve, reject) => {
         connectDB.query(query, (err, result) => {
             if (err) {
-                console.error('Error executing query:', query);
+                console.error('Error executing query:', query, 'Error:', err);
                 return reject(err);
             }
             resolve(result);
